@@ -58,12 +58,13 @@ passport.serializeUser(function(user, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    //callbackURL: "http://localhost:3000/auth/google/secrets"
+    //callbackURL: "http://localhost:3000/auth/google/secrets",
     callbackURL:"https://mnit-confession.cyclic.app/auth/google/secrets",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({username: profile.emails[0].value, googleId: profile.id }, function (err, user) {
+    //console.log(profile);
+    User.findOrCreate({username: profile.displayName, googleId: profile.id }, function (err, user) {
       return cb(err, user);
     });
   }
