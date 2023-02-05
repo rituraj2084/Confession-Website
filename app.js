@@ -32,6 +32,7 @@ const uri = process.env.MONGODB_URI;
 mongoose.connect(uri,{ useNewUrlParser: true });
 
 const userSchema = new mongoose.Schema({
+    username: String,
     email : String,
     password: String,
     googleId: String,
@@ -58,10 +59,11 @@ passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     //callbackURL: "http://localhost:3000/auth/google/secrets"
-    callbackURL:"https://mnit-confession.cyclic.app/auth/google/secrets"
+    callbackURL:"https://mnit-confession.cyclic.app/auth/google/secrets",
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    User.findOrCreate({username: profile.emails[0].value, googleId: profile.id }, function (err, user) {
       return cb(err, user);
     });
   }
@@ -74,7 +76,7 @@ passport.use(new FacebookStrategy({
     callbackURL: "https://mnit-confession.cyclic.app/auth/facebook/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+    User.findOrCreate({username: profile.displayName, facebookId: profile.id }, function (err, user) {
       return cb(err, user);
     });
   }
