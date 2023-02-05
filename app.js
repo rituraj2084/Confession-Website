@@ -14,11 +14,12 @@ const findOrCreate = require('mongoose-findorcreate');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
+app.enable('trust proxy');
 app.set("view engine", "ejs");
 app.use(session({
     secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
   })
 );
 
@@ -56,7 +57,8 @@ passport.serializeUser(function(user, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets"
+    //callbackURL: "http://localhost:3000/auth/google/secrets"
+    callbackURL:"https://mnit-confession.cyclic.app/auth/google/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
     User.findOrCreate({ googleId: profile.id }, function (err, user) {
@@ -68,7 +70,8 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/secrets"
+    //callbackURL: "http://localhost:3000/auth/facebook/secrets"
+    callbackURL: "https://mnit-confession.cyclic.app/auth/facebook/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
     User.findOrCreate({ facebookId: profile.id }, function (err, user) {
@@ -131,9 +134,11 @@ app.get("/secrets", function(req, res){
 
 app.get("/submit", function(req, res){
     if(req.isAuthenticated()){
+        console.log("User is successfully authenticated");
         res.render("submit");
     }
     else{
+        console.log("User is not authenticated");
         res.redirect("/login");
     }
 });
@@ -168,6 +173,7 @@ app.post("/login", function(req, res){
     });
     req.login(user, function(err){
         if(err){
+            console.log(err);
             res.redirect("/login");
         }
         else{
