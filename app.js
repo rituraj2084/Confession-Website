@@ -136,14 +136,15 @@ app.get("/secrets", function(req, res){
 });
 
 app.get("/submit", function(req, res){
-    if(req.isAuthenticated()){
-        console.log("User is successfully authenticated");
-        res.render("submit");
-    }
-    else{
-        console.log("User is not authenticated");
-        res.redirect("/login");
-    }
+    // if(req.isAuthenticated()){
+    //     console.log("User is successfully authenticated");
+    //     res.render("submit");
+    // }
+    // else{
+    //     console.log("User is not authenticated");
+    //     res.redirect("/login");
+    // }
+    res.render("submit");
 });
 
 app.get("/logout", function(req, res, next){
