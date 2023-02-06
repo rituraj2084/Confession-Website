@@ -58,12 +58,12 @@ passport.serializeUser(function(user, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    //callbackURL: "http://localhost:3000/auth/google/secrets",
-    callbackURL:"https://mnit-confession.cyclic.app/auth/google/secrets",
+    callbackURL: "http://localhost:3000/auth/google/secrets",
+    //callbackURL:"https://mnit-confession.cyclic.app/auth/google/secrets",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
-    //console.log(profile);
+    console.log("The profile details is ", profile);
     User.findOrCreate({username: profile.displayName, googleId: profile.id }, function (err, user) {
       return cb(err, user);
     });
@@ -77,6 +77,7 @@ passport.use(new FacebookStrategy({
     callbackURL: "https://mnit-confession.cyclic.app/auth/facebook/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
+    //console.log(profile);
     User.findOrCreate({username: profile.displayName, facebookId: profile.id }, function (err, user) {
       return cb(err, user);
     });
@@ -190,10 +191,12 @@ app.post("/login", function(req, res){
 
 app.post("/submit", function(req, res){
     const submittedSecret = req.body.secret;
-    //console.log(req.user._id);
+    console.log("Printing user details: ",req.user);
+    if(!req.user || !req.user._id) res.send("User not found").end();
     User.findById(req.user._id, function(err, foundUser){
         if(err) {
             console.log(err);
+            res.send("Submit Error"+ err).end();
         }
         else{
             if(foundUser){
