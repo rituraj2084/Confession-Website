@@ -165,6 +165,7 @@ app.post("/register", function(req, res){
         }
         else{
             passport.authenticate("local")(req, res, function(){
+                
                 res.redirect("/secrets");
             });
         }
@@ -178,10 +179,11 @@ app.post("/login", function(req, res){
     });
     req.login(user, function(err){
         if(err){
-            console.log(err);
-            res.redirect("/login");
+            res.send("Login Error" + err).end();
+            //res.redirect("/login");
         }
         else{
+            console.log("User details", user);
             passport.authenticate("local")(req, res, function(){
                 res.redirect("/secrets");
             });
